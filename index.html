@@ -110,10 +110,6 @@
 			font-weight: 400;
 		}
 		
-		.case-studies-summary {
-			font-family: 'Montserrat', sans-serif;
-		}
-		
 		#fh5co-header .display-tc h1 {
 			font-family: 'Dancing Script', cursive;
 			font-weight: 700;
@@ -332,6 +328,76 @@
 				font-size: 9px;
 			}
 		}
+
+		/* QR Code Section Styles */
+		.qr-wrap {
+			background: #fff;
+			padding: 30px;
+			border-radius: 20px;
+			box-shadow: 0 10px 30px rgba(var(--primary-color-rgb), 0.1);
+			margin-bottom: 30px;
+			transition: all 0.3s ease;
+			border: 2px solid rgba(var(--primary-color-rgb), 0.1);
+		}
+
+		.qr-wrap:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 15px 35px rgba(var(--primary-color-rgb), 0.2);
+			border-color: rgba(var(--primary-color-rgb), 0.2);
+		}
+
+		.qr-wrap h3 {
+			color: var(--primary-color);
+			font-size: 28px;
+			margin-bottom: 20px;
+		}
+
+		.qr-image {
+			padding: 20px;
+			background: #fff;
+			border-radius: 15px;
+			margin: 0 auto 20px;
+			max-width: 250px;
+			border: 2px solid rgba(var(--primary-color-rgb), 0.1);
+		}
+
+		.qr-image img {
+			width: 100%;
+			height: auto;
+		}
+
+		.bank-info {
+			color: #666;
+			font-size: 16px;
+			line-height: 1.8;
+			margin: 0;
+			padding: 15px;
+			background: rgba(var(--primary-color-rgb), 0.05);
+			border-radius: 10px;
+		}
+
+		.bank-info strong {
+			color: var(--primary-color);
+			font-weight: 600;
+		}
+
+		@media screen and (max-width: 768px) {
+			.qr-wrap {
+				padding: 20px;
+			}
+
+			.qr-wrap h3 {
+				font-size: 24px;
+			}
+
+			.qr-image {
+				max-width: 200px;
+			}
+
+			.bank-info {
+				font-size: 14px;
+			}
+		}
 	</style>
 
 </head>
@@ -371,7 +437,7 @@
 				<div class="couple-wrap animate-box">
 					<div class="couple-half">
 						<div class="groom">
-							<img src="images/z6652578337927_480a753e5ec891244f4742ba7da8d4e7.jpg" alt="groom" class="img-responsive">
+							<img src="images/ava2.png" alt="groom" class="img-responsive">
 						</div>
 						<div class="desc-groom">
 							<h3>Minh Đức</h3>
@@ -381,7 +447,7 @@
 					<p class="heart text-center"><i class="icon-heart2"></i></p>
 					<div class="couple-half">
 						<div class="bride">
-							<img src="images/z6652578276931_cc3b6d5cd77057c4296b808934a1aa0a.jpg" alt="groom" class="img-responsive">
+							<img src="images/ava1.png" alt="groom" class="img-responsive">
 						</div>
 						<div class="desc-bride">
 							<h3>Ngọc Ánh</h3>
@@ -407,34 +473,34 @@
 							<div class="col-md-10 col-md-offset-1">
 								<div class="col-md-6 col-sm-6 text-center">
 									<div class="event-wrap animate-box">
-										<h3>Lễ Thành Hôn</h3>
+										<h3>Lễ ăn hỏi</h3>
 										<div class="event-col">
 											<i class="icon-clock"></i>
-											<span>9:00 AM</span>
-											<span>11:00 AM</span>
+											<span>05:00 PM</span>
+											<span>06:00 PM</span>
 										</div>
 										<div class="event-col">
 											<i class="icon-calendar"></i>
 											<span>Thứ Bảy</span>
 											<span>14/06/2025</span>
 										</div>
-										<p>Lễ thành hôn sẽ được tổ chức trang trọng tại nhà thờ với sự chứng kiến của gia đình, họ hàng và những người thân yêu.</p>
+										<p>Lễ ăn hỏi sẽ được tổ chức trang trọng tại tư gia nhà gái với sự chứng kiến của gia đình, họ hàng và những người thân yêu.</p>
 									</div>
 								</div>
 								<div class="col-md-6 col-sm-6 text-center">
 									<div class="event-wrap animate-box">
-										<h3>Tiệc Cưới</h3>
+										<h3>Lễ thành hôn</h3>
 										<div class="event-col">
 											<i class="icon-clock"></i>
-											<span>11:30 AM</span>
-											<span>2:00 PM</span>
+											<span>10:30 AM</span>
+											<span>11:30 PM</span>
 										</div>
 										<div class="event-col">
 											<i class="icon-calendar"></i>
-											<span>Thứ Bảy</span>
-											<span>14/06/2025</span>
+											<span>Chủ Nhật</span>
+											<span>15/06/2025</span>
 										</div>
-										<p>Tiệc cưới sẽ được tổ chức trong không gian ấm cúng, lãng mạn với sự góp mặt của gia đình và bạn bè thân thiết.</p>
+										<p>Lễ thành hôn sẽ được tổ chức trang trọng tại tư gia nhà trai với sự chứng kiến của gia đình, họ hàng và những người thân yêu.</p>
 									</div>
 								</div>
 							</div>
@@ -460,19 +526,11 @@
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578403363_8db3046ac65f43fce1d577819cea85b1.jpg); ">
 								<a href="images/gallery-1.jpg">
-									<div class="case-studies-summary">
-										<span>14 Photos</span>
-										<h2>Two Glas of Juice</h2>
-									</div>
 								</a>
 							</li>
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578434465_1cc4f54276706a4cf09718860f538ed7.jpg); ">
 								<a href="#" class="color-2">
-									<div class="case-studies-summary">
-										<span>30 Photos</span>
-										<h2>Timer starts now!</h2>
-									</div>
 								</a>
 							</li>
 
@@ -480,67 +538,39 @@
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578494650_329b05d46030168fec4cc322a92710be.jpg); ">
 								<a href="#" class="color-3">
-									<div class="case-studies-summary">
-										<span>90 Photos</span>
-										<h2>Beautiful sunset</h2>
-									</div>
 								</a>
 							</li>
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578500015_4e64da1ba5aa2b9e27e9885b492e3b5c.jpg); ">
 								<a href="#" class="color-4">
-									<div class="case-studies-summary">
-										<span>12 Photos</span>
-										<h2>Company's Conference Room</h2>
-									</div>
 								</a>
 							</li>
 
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578605068_92efaaa39d69aa4c64b24266aa974ad0.jpg); ">
 								<a href="#" class="color-3">
-									<div class="case-studies-summary">
-										<span>50 Photos</span>
-										<h2>Useful baskets</h2>
-									</div>
 								</a>
 							</li>
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578662552_0729c595a2e2860031d38cf4d5d2d78a.jpg); ">
 								<a href="#" class="color-4">
-									<div class="case-studies-summary">
-										<span>45 Photos</span>
-										<h2>Skater man in the road</h2>
-									</div>
 								</a>
 							</li>
 
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578822214_f214401a66e75ac701ebf22adcbe98e8.jpg); ">
 								<a href="#" class="color-4">
-									<div class="case-studies-summary">
-										<span>35 Photos</span>
-										<h2>Two Glas of Juice</h2>
-									</div>
 								</a>
 							</li>
 
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578863134_a6a15eafa15043a4aad3970a1cbe27e5.jpg); ">
 								<a href="#" class="color-5">
-									<div class="case-studies-summary">
-										<span>90 Photos</span>
-										<h2>Timer starts now!</h2>
-									</div>
 								</a>
 							</li>
 							<li class="one-third animate-box" data-animate-effect="fadeIn"
 								style="background-image: url(images/z6652578863134_a6a15eafa15043a4aad3970a1cbe27e5.jpg); ">
 								<a href="#" class="color-6">
-									<div class="case-studies-summary">
-										<span>56 Photos</span>
-										<h2>Beautiful sunset</h2>
-									</div>
 								</a>
 							</li>
 						</ul>
@@ -557,6 +587,32 @@
 					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
 						<h2 style="font-family: 'Dancing Script', cursive; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Bạn Sẽ Tham Dự Chứ?</h2>
 						<p style="font-weight: 400; color: #fff;font-size: 20px; opacity: 1; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Sự hiện diện của bạn là niềm hạnh phúc lớn lao đối với chúng tôi.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="fh5co-qr" class="fh5co-section-gray" style="padding-top: 100px;">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+					<h2>Mừng Cưới</h2>
+					<p>Xin chân thành cảm ơn những tình cảm của quý vị dành cho chúng tôi</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1 text-center">
+					<div class="qr-wrap">
+						<h3>Cô Dâu - Ngọc Ánh</h3>
+						<div class="qr-image">
+							<img src="images/qr2.jpg" alt="QR Cô Dâu" class="img-responsive">
+						</div>
+						<p class="bank-info">
+							<strong>Ngân hàng:</strong> BIDV<br>
+							<strong>STK:</strong> 2600841912<br>
+							<strong>Chủ TK:</strong> PHAN THI NGOC ANH
+						</p>
 					</div>
 				</div>
 			</div>
