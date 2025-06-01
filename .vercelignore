@@ -1,0 +1,15 @@
+# Ignore data directory (not needed on serverless deployment)
+data/
+
+# Ignore local development files
+.DS_Store
+*.log
+
+# Ignore node_modules (handled by Vercel automatically)
+node_modules/
+
+# Ignore git files
+.git/
+
+# Ignore VSCode settings
+.vscode/ 

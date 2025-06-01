@@ -179,7 +179,11 @@ app.get('/admin', requireAuth, async (req, res) => {
         });
     } catch (error) {
         console.error('Error reading invitations:', error);
-        res.redirect('/admin?error=Có lỗi xảy ra khi tải danh sách thư mời');
+        res.render('admin/index', { 
+            title: 'Quản lý Thư mời - Đám cưới Minh Đức & Ngọc Ánh',
+            invitations: [],
+            layout: 'layout'
+        });
     }
 });
 
@@ -201,7 +205,7 @@ app.post('/admin/invitations', requireAuth, async (req, res) => {
         res.redirect('/admin?success=Tạo thư mời thành công');
     } catch (error) {
         console.error('Error creating invitation:', error);
-        res.redirect('/admin?error=Có lỗi xảy ra khi tạo thư mời');
+        res.redirect('/admin?error=Lỗi: Không thể ghi file trên môi trường production');
     }
 });
 
@@ -229,7 +233,7 @@ app.put('/admin/invitations/:id', requireAuth, async (req, res) => {
         res.redirect('/admin?success=Cập nhật thư mời thành công');
     } catch (error) {
         console.error('Error updating invitation:', error);
-        res.redirect('/admin?error=Có lỗi xảy ra khi cập nhật thư mời');
+        res.redirect('/admin?error=Lỗi: Không thể ghi file trên môi trường production');
     }
 });
 
@@ -259,11 +263,14 @@ app.delete('/admin/invitations/:id', requireAuth, async (req, res) => {
         res.redirect('/admin?success=Xóa thư mời thành công');
     } catch (error) {
         console.error('Error deleting invitation:', error);
+        
         // Check if request expects JSON response
         if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
-            return res.status(500).json({ error: 'Có lỗi xảy ra khi xóa thư mời' });
+            return res.status(500).json({ 
+                error: 'Lỗi: Không thể ghi file trên môi trường production. Dữ liệu sẽ mất khi restart server.'
+            });
         }
-        res.redirect('/admin?error=Có lỗi xảy ra khi xóa thư mời');
+        res.redirect('/admin?error=Lỗi: Không thể ghi file trên môi trường production');
     }
 });
 
