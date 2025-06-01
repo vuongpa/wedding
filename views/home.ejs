@@ -2,13 +2,15 @@
 	style="background-image:url(/images/z6652578434465_1cc4f54276706a4cf09718860f538ed7.jpg); background-position: center -50vh;"
 	data-stellar-background-ratio="0.5">
 	<div class="overlay"></div>
+	<!-- Falling Hearts Animation -->
+	<div class="hearts-container"></div>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2 text-center">
 				<div class="display-t">
 					<div class="display-tc animate-box" data-animate-effect="fadeIn">
-						<h1 style="margin-top: 30%;">Minh Đức ~ Ngọc Ánh</h1>
-						<h2>Chúng tôi sắp kết hôn</h2>
+						<h1 style="margin-top: 30%; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); animation: titleGlow 3s ease-in-out infinite;">Minh Đức ~ Ngọc Ánh</h1>
+						<h2 style="text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); animation: subtitleFloat 4s ease-in-out infinite;">Chúng tôi sắp kết hôn</h2>
 						<div class="simply-countdown simply-countdown-one"></div>
 					</div>
 				</div>
@@ -21,7 +23,15 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-8 col-md-offset-2 text-center fh5co-heading animate-box">
-				<h2>Trân trọng kính mời {{name}}</h2>
+				<h2 style="background: linear-gradient(45deg, #4a3223, #6b4c37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Dancing Script', cursive; font-weight: 700; animation: titleGlow 5s ease-in-out infinite;">
+					<% if (invitation) { %>
+						Trân trọng kính mời <%= invitation.title %>
+					<% } else if (recentInvitations.length > 0) { %>
+						Trân trọng kính mời <%= recentInvitations[0].title %>
+					<% } else { %>
+						Trân trọng kính mời Quý khách
+					<% } %>
+				</h2>
 				<h3>Ngày 14 tháng 06 năm 2025</h3>
 				<p>Đến dự bữa tiệc thân mật cùng gia đình chúng tôi tại <a
 						href="https://maps.app.goo.gl/ZkTRURcq6DBd3Lgi8"
@@ -32,7 +42,7 @@
 		<div class="couple-wrap animate-box">
 			<div class="couple-half">
 				<div class="groom">
-					<img src="/images/ava1.png" alt="groom" class="img-responsive">
+					<img src="/images/ava1.png" alt="groom" class="img-responsive floating-image">
 				</div>
 				<div class="desc-groom">
 					<h3>Ngọc Ánh</h3>
@@ -40,10 +50,10 @@
 						ngào và sự quan tâm chân thành dành cho người yêu của mình.</p>
 				</div>
 			</div>
-			<p class="heart text-center"><i class="icon-heart2"></i></p>
+			<p class="heart text-center" style="animation: heartBeat 2s ease-in-out infinite;"><i class="icon-heart2"></i></p>
 			<div class="couple-half">
 				<div class="bride">
-					<img src="/images/ava2.png" alt="groom" class="img-responsive">
+					<img src="/images/ava2.png" alt="groom" class="img-responsive floating-image">
 				</div>
 				<div class="desc-bride">
 					<h3>Minh Đức</h3>
@@ -210,6 +220,49 @@
 </div>
 
 <script>
+// Falling Hearts Animation
+function createFallingHeart() {
+	const heart = document.createElement('div');
+	heart.className = 'falling-heart';
+
+	// Random starting position
+	const startX = Math.random() * window.innerWidth;
+	heart.style.left = `${startX}px`;
+
+	// Random size between 8px and 16px
+	const size = Math.random() * 8 + 8;
+	heart.style.width = `${size}px`;
+	heart.style.height = `${size}px`;
+
+	// Set random movement pattern
+	const translateX = (Math.random() - 0.5) * 100;
+	const rotate = Math.random() * 360;
+	heart.style.setProperty('--translate-x', translateX);
+	heart.style.setProperty('--rotate', rotate);
+
+	// Random animation duration between 5s and 10s
+	const duration = Math.random() * 5 + 5;
+	heart.style.animationDuration = `${duration}s`;
+
+	// Random delay
+	heart.style.animationDelay = `${Math.random() * 2}s`;
+
+	// Random opacity
+	heart.style.opacity = Math.random() * 0.4 + 0.3;
+
+	document.querySelector('.hearts-container').appendChild(heart);
+
+	// Remove heart after animation
+	setTimeout(() => {
+		if (heart.parentNode) {
+			heart.remove();
+		}
+	}, (duration + 2) * 1000);
+}
+
+// Create hearts periodically
+setInterval(createFallingHeart, 300);
+
 document.addEventListener('DOMContentLoaded', function() {
 	console.log('Document ready, initializing countdown...');
 	console.log('simplyCountdown function available:', typeof simplyCountdown);
@@ -278,3 +331,127 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 });
 </script>
+
+<style>
+/* Falling Hearts Animation */
+.hearts-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 1000;
+	overflow: hidden;
+}
+
+.falling-heart {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	background: #ff0000;
+	transform: rotate(45deg);
+	animation: falling linear infinite;
+	opacity: 0.6;
+}
+
+.falling-heart::before,
+.falling-heart::after {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: inherit;
+	border-radius: 50%;
+}
+
+.falling-heart::before {
+	left: -50%;
+}
+
+.falling-heart::after {
+	top: -50%;
+}
+
+@keyframes falling {
+	0% {
+		transform: translate(0, -10vh) rotate(45deg) scale(0);
+		opacity: 0.8;
+	}
+	10% {
+		opacity: 1;
+	}
+	90% {
+		opacity: 0.5;
+	}
+	100% {
+		transform: translate(calc(var(--translate-x) * 1px), 100vh) rotate(calc(45deg + var(--rotate) * 1deg)) scale(1);
+		opacity: 0;
+	}
+}
+
+/* Title glow animation */
+@keyframes titleGlow {
+	0%, 100% {
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+	}
+	50% {
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 255, 255, 0.6);
+	}
+}
+
+/* Subtitle float animation */
+@keyframes subtitleFloat {
+	0%, 100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-5px);
+	}
+}
+
+/* Heart beat animation */
+@keyframes heartBeat {
+	0%, 100% {
+		transform: scale(1);
+		color: #ff0000;
+	}
+	50% {
+		transform: scale(1.2);
+		color: #ff3333;
+	}
+}
+
+/* Floating images */
+.floating-image {
+	animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+	0%, 100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+/* Enhanced animations for existing elements */
+.animate-box {
+	transition: all 0.3s ease-in-out;
+}
+
+.animate-box:hover {
+	transform: translateY(-5px);
+}
+
+/* Gallery hover effects */
+#fh5co-gallery-list li {
+	transition: all 0.3s ease-in-out;
+}
+
+#fh5co-gallery-list li:hover {
+	transform: scale(1.05);
+	box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+</style>

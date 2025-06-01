@@ -447,7 +447,7 @@
             right: -10px;
             width: 250px;
             height: auto;
-            z-index: 12;
+            z-index: 100;
             filter: drop-shadow(0 5px 15px rgba(255, 0, 0, 0.2));
         }
 
@@ -596,8 +596,47 @@
                 width: 100px;
             }
 
+            .bowtie-image {
+                width: 120px;
+            }
+
+            .signature {
+                font-size: 1em;
+                bottom: 15px;
+                left: 15px;
+            }
+
             .card {
                 padding: 20px;
+            }
+        }
+
+        /* Tablet responsive */
+        @media (max-width: 768px) and (min-width: 481px) {
+            .bowtie-image {
+                width: 200px;
+            }
+            
+            .container {
+                max-width: 500px;
+                height: 350px;
+            }
+
+            .signature {
+                font-size: 1.3em;
+                bottom: 25px;
+                left: 25px;
+            }
+        }
+
+        /* Small tablet responsive */
+        @media (max-width: 600px) and (min-width: 481px) {
+            .bowtie-image {
+                width: 160px;
+            }
+
+            .signature {
+                font-size: 1.2em;
             }
         }
 
@@ -717,7 +756,7 @@
                 <img src="/images/bowtie.png" alt="Bowtie" class="bowtie-image">
             </div>
             <div class="envelope-flap"></div>
-            <a class="envelope-contents" href="/">
+            <a class="envelope-contents" href="/home/<%= invitation.id %>">
                 <div class="corner corner-top-left"></div>
                 <div class="corner corner-top-right"></div>
                 <div class="corner corner-bottom-left"></div>

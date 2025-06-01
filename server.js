@@ -63,6 +63,7 @@ app.get('/', async (req, res) => {
         res.render('home', { 
             title: 'Đám cưới Minh Đức & Ngọc Ánh',
             recentInvitations,
+            invitation: null,
             layout: 'layout'
         });
     } catch (error) {
@@ -71,6 +72,39 @@ app.get('/', async (req, res) => {
             title: 'Lỗi - Đám cưới Minh Đức & Ngọc Ánh',
             message: 'Có lỗi xảy ra',
             error: { status: 500 }
+        });
+    }
+});
+
+// Home page with invitation ID route
+app.get('/home/:id', async (req, res) => {
+    try {
+        const data = await fs.readFile(DATA_FILE, 'utf8');
+        const invitations = JSON.parse(data);
+        const invitation = invitations.find(inv => inv.id === req.params.id);
+        
+        if (invitation) {
+            res.render('home', { 
+                title: 'Đám cưới Minh Đức & Ngọc Ánh',
+                recentInvitations: [],
+                invitation,
+                layout: 'layout'
+            });
+        } else {
+            res.status(404).render('error', { 
+                title: 'Không tìm thấy - Đám cưới Minh Đức & Ngọc Ánh',
+                message: 'Không tìm thấy thư mời',
+                error: { status: 404 },
+                layout: 'layout'
+            });
+        }
+    } catch (error) {
+        console.error('Error reading invitation:', error);
+        res.status(500).render('error', { 
+            title: 'Lỗi - Đám cưới Minh Đức & Ngọc Ánh',
+            message: 'Có lỗi xảy ra',
+            error: { status: 500 },
+            layout: 'layout'
         });
     }
 });
