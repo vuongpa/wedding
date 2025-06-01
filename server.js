@@ -27,7 +27,8 @@ app.use(session({
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days instead of 1 day
         httpOnly: true // Add security
     },
-    rolling: true // Reset maxAge on each request
+    rolling: true, // Reset maxAge on each request
+    // Note: MemoryStore warning is expected on serverless - sessions reset on each cold start
 }));
 
 // Middleware
@@ -58,8 +59,15 @@ app.use((req, res, next) => {
 
 // Ensure data directory exists
 async function ensureDataDir() {
+    // Skip on serverless/production environments
+    if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NODE_ENV === 'production') {
+        console.log('[INIT] Skipping data directory creation on serverless environment');
+        return;
+    }
+    
     try {
         await fs.mkdir(path.join(__dirname, 'data'), { recursive: true });
+        console.log('[INIT] Data directory created/verified');
     } catch (error) {
         console.error('Error creating data directory:', error);
     }
@@ -67,10 +75,22 @@ async function ensureDataDir() {
 
 // Initialize empty JSON file if it doesn't exist
 async function initDataFile() {
+    // Skip on serverless/production environments
+    if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NODE_ENV === 'production') {
+        console.log('[INIT] Skipping data file initialization on serverless environment');
+        return;
+    }
+    
     try {
         await fs.access(DATA_FILE);
+        console.log('[INIT] Data file exists');
     } catch {
-        await fs.writeFile(DATA_FILE, '[]');
+        try {
+            await fs.writeFile(DATA_FILE, '[]');
+            console.log('[INIT] Data file created');
+        } catch (error) {
+            console.error('Error creating data file:', error);
+        }
     }
 }
 
@@ -92,10 +112,12 @@ app.get('/', async (req, res) => {
         });
     } catch (error) {
         console.error('Error reading invitations:', error);
-        res.status(500).render('error', { 
-            title: 'Lỗi - Đám cưới Minh Đức & Ngọc Ánh',
-            message: 'Có lỗi xảy ra',
-            error: { status: 500 }
+        // If no file exists (production), show empty state
+        res.render('home', { 
+            title: 'Đám cưới Minh Đức & Ngọc Ánh',
+            recentInvitations: [],
+            invitation: null,
+            layout: 'layout'
         });
     }
 });
@@ -124,10 +146,11 @@ app.get('/home/:id', async (req, res) => {
         }
     } catch (error) {
         console.error('Error reading invitation:', error);
-        res.status(500).render('error', { 
-            title: 'Lỗi - Đám cưới Minh Đức & Ngọc Ánh',
-            message: 'Có lỗi xảy ra',
-            error: { status: 500 },
+        // If no file exists (production), show 404
+        res.status(404).render('error', { 
+            title: 'Không tìm thấy - Đám cưới Minh Đức & Ngọc Ánh',
+            message: 'Không tìm thấy thư mời',
+            error: { status: 404 },
             layout: 'layout'
         });
     }
@@ -179,10 +202,14 @@ app.get('/admin', requireAuth, async (req, res) => {
         });
     } catch (error) {
         console.error('Error reading invitations:', error);
+        // If no file exists (production), show empty list with warning
         res.render('admin/index', { 
             title: 'Quản lý Thư mời - Đám cưới Minh Đức & Ngọc Ánh',
             invitations: [],
-            layout: 'layout'
+            layout: 'layout',
+            messages: {
+                error: 'Đang chạy trên môi trường production - dữ liệu sẽ không được lưu vĩnh viễn'
+            }
         });
     }
 });
@@ -190,8 +217,14 @@ app.get('/admin', requireAuth, async (req, res) => {
 // Create invitation route
 app.post('/admin/invitations', requireAuth, async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        let invitations = [];
+        try {
+            const data = await fs.readFile(DATA_FILE, 'utf8');
+            invitations = JSON.parse(data);
+        } catch (readError) {
+            console.log('No existing data file, starting with empty array');
+        }
+        
         const newInvitation = {
             id: Math.random().toString(36).substr(2, 9),
             title: req.body.title,
@@ -212,8 +245,14 @@ app.post('/admin/invitations', requireAuth, async (req, res) => {
 // Update invitation route
 app.put('/admin/invitations/:id', requireAuth, async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        let invitations = [];
+        try {
+            const data = await fs.readFile(DATA_FILE, 'utf8');
+            invitations = JSON.parse(data);
+        } catch (readError) {
+            return res.redirect('/admin?error=Không tìm thấy dữ liệu thư mời');
+        }
+        
         const index = invitations.findIndex(inv => inv.id === req.params.id);
         
         if (index === -1) {
@@ -240,8 +279,17 @@ app.put('/admin/invitations/:id', requireAuth, async (req, res) => {
 // Delete invitation route
 app.delete('/admin/invitations/:id', requireAuth, async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        let invitations = [];
+        try {
+            const data = await fs.readFile(DATA_FILE, 'utf8');
+            invitations = JSON.parse(data);
+        } catch (readError) {
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                return res.status(404).json({ error: 'Không tìm thấy dữ liệu thư mời' });
+            }
+            return res.redirect('/admin?error=Không tìm thấy dữ liệu thư mời');
+        }
+        
         const index = invitations.findIndex(inv => inv.id === req.params.id);
         
         if (index === -1) {
@@ -296,10 +344,10 @@ app.get('/invitation/:id', async (req, res) => {
         }
     } catch (error) {
         console.error('Error reading invitation:', error);
-        res.status(500).render('error', { 
-            title: 'Lỗi - Đám cưới Minh Đức & Ngọc Ánh',
-            message: 'Có lỗi xảy ra',
-            error: { status: 500 },
+        res.status(404).render('error', { 
+            title: 'Không tìm thấy - Đám cưới Minh Đức & Ngọc Ánh',
+            message: 'Không tìm thấy thư mời',
+            error: { status: 404 },
             layout: 'layout'
         });
     }
@@ -319,7 +367,7 @@ app.get('/api/invitations/:id', async (req, res) => {
         res.json(invitation);
     } catch (error) {
         console.error('Error reading invitation:', error);
-        res.status(500).json({ error: 'Có lỗi xảy ra' });
+        res.status(404).json({ error: 'Không tìm thấy thư mời' });
     }
 });
 
