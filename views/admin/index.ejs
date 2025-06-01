@@ -370,10 +370,14 @@
                                     </a>
                                 </td>
                                 <td>
+                                    <!-- Delete form with improved error handling -->
                                     <form action="/admin/invitations/<%= invitation.id %>?_method=DELETE" 
-                                          method="POST" style="display: inline;"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa thư mời này?')">
-                                        <button type="submit" class="btn btn-danger btn-sm">
+                                          method="POST" 
+                                          style="display: inline;"
+                                          class="delete-form"
+                                          data-invitation-id="<%= invitation.id %>"
+                                          data-invitation-title="<%= invitation.title %>">
+                                        <button type="submit" class="btn btn-danger btn-sm delete-btn">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -453,6 +457,60 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Enhanced delete form handling
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const invitationTitle = this.dataset.invitationTitle;
+            const invitationId = this.dataset.invitationId;
+            const deleteBtn = this.querySelector('.delete-btn');
+            
+            // Show confirmation dialog
+            if (!confirm(`Bạn có chắc chắn muốn xóa thư mời "${invitationTitle}"?\n\nHành động này không thể hoàn tác!`)) {
+                return;
+            }
+            
+            // Show loading state
+            const originalHtml = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            deleteBtn.disabled = true;
+            
+            // Check session before submitting
+            fetch('/admin', { 
+                method: 'HEAD',
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (response.status === 401 || response.redirected && response.url.includes('/admin/login')) {
+                    // Session expired
+                    alert('Phiên đăng nhập đã hết hạn. Bạn sẽ được chuyển đến trang đăng nhập.');
+                    window.location.href = '/admin/login?error=Phiên đăng nhập đã hết hạn';
+                    return;
+                }
+                
+                // Session is valid, proceed with deletion
+                this.submit();
+            })
+            .catch(error => {
+                console.error('Session check failed:', error);
+                // Fallback: try to submit anyway
+                this.submit();
+            })
+            .finally(() => {
+                // Reset button after 3 seconds (fallback)
+                setTimeout(() => {
+                    deleteBtn.innerHTML = originalHtml;
+                    deleteBtn.disabled = false;
+                }, 3000);
+            });
+        });
+    });
+});
 </script>
 
 <!-- Font Awesome for icons -->

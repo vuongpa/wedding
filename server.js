@@ -19,13 +19,17 @@ app.set('layout', 'layout');
 
 // Session middleware
 app.use(session({
-    secret: 'wedding-secret-key-2024',
+    secret: process.env.SESSION_SECRET || 'wedding-secret-key-2024-very-long-random-string',
     resave: false,
     saveUninitialized: false,
+    rolling: true, // Reset expiration on activity
     cookie: { 
-        secure: false, // Set to true if using HTTPS
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+        secure: process.env.NODE_ENV === 'production' && process.env.VERCEL_URL ? true : false,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true, // Prevent XSS
+        sameSite: 'lax' // CSRF protection
+    },
+    name: 'wedding.session' // Custom session name
 }));
 
 // Middleware
@@ -36,10 +40,29 @@ app.use(methodOverride('_method'));
 
 // Admin authentication middleware
 function requireAuth(req, res, next) {
+    console.log('Session check:', {
+        sessionExists: !!req.session,
+        authenticated: req.session?.authenticated,
+        sessionID: req.session?.id,
+        method: req.method,
+        url: req.url
+    });
+    
     if (req.session && req.session.authenticated) {
+        // Refresh session on each request to prevent timeout
+        req.session.touch();
         return next();
     } else {
-        return res.redirect('/admin/login');
+        console.log('Authentication failed - redirecting to login');
+        
+        // For AJAX requests or API calls, return JSON error
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+            return res.status(401).json({ error: 'Session expired', redirect: '/admin/login' });
+        }
+        
+        // For regular form submissions, redirect with message
+        const returnUrl = encodeURIComponent(req.originalUrl);
+        return res.redirect(`/admin/login?error=Phiên đăng nhập đã hết hạn&returnUrl=${returnUrl}`);
     }
 }
 
@@ -136,9 +159,13 @@ app.get('/admin/login', (req, res) => {
     if (req.session && req.session.authenticated) {
         return res.redirect('/admin');
     }
+    
+    const returnUrl = req.query.returnUrl || '';
+    
     res.render('admin/login', { 
         title: 'Đăng nhập Admin - Đám cưới Minh Đức & Ngọc Ánh',
         error: req.query.error,
+        returnUrl: returnUrl,
         layout: false
     });
 });
@@ -146,12 +173,15 @@ app.get('/admin/login', (req, res) => {
 // Admin login form handler
 app.post('/admin/login', (req, res) => {
     const { password } = req.body;
+    const returnUrl = req.query.returnUrl || '/admin';
     
     if (password === ADMIN_PASSWORD) {
         req.session.authenticated = true;
-        res.redirect('/admin');
+        console.log('Login successful, redirecting to:', returnUrl);
+        res.redirect(returnUrl);
     } else {
-        res.redirect('/admin/login?error=Mật khẩu không đúng');
+        console.log('Login failed - wrong password');
+        res.redirect(`/admin/login?error=Mật khẩu không đúng&returnUrl=${encodeURIComponent(returnUrl)}`);
     }
 });
 
@@ -248,6 +278,29 @@ app.delete('/admin/invitations/:id', requireAuth, async (req, res) => {
         res.redirect('/admin?success=Xóa thư mời thành công');
     } catch (error) {
         console.error('Error deleting invitation:', error);
+        res.redirect('/admin?error=Có lỗi xảy ra khi xóa thư mời');
+    }
+});
+
+// Backup POST route for delete (in case DELETE method fails)
+app.post('/admin/invitations/:id/delete', requireAuth, async (req, res) => {
+    try {
+        const data = await fs.readFile(DATA_FILE, 'utf8');
+        const invitations = JSON.parse(data);
+        const index = invitations.findIndex(inv => inv.id === req.params.id);
+        
+        if (index === -1) {
+            return res.redirect('/admin?error=Không tìm thấy thư mời');
+        }
+        
+        const deletedInvitation = invitations[index];
+        invitations.splice(index, 1);
+        await fs.writeFile(DATA_FILE, JSON.stringify(invitations, null, 2));
+        
+        console.log(`Deleted invitation: ${deletedInvitation.title} (ID: ${deletedInvitation.id})`);
+        res.redirect('/admin?success=Xóa thư mời thành công');
+    } catch (error) {
+        console.error('Error deleting invitation via POST:', error);
         res.redirect('/admin?error=Có lỗi xảy ra khi xóa thư mời');
     }
 });

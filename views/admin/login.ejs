@@ -248,7 +248,7 @@
             </div>
         <% } %>
 
-        <form action="/admin/login" method="POST">
+        <form action="/admin/login<%= returnUrl ? '?returnUrl=' + encodeURIComponent(returnUrl) : '' %>" method="POST">
             <div class="form-group">
                 <i class="fas fa-lock form-icon"></i>
                 <input type="password" 
