@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Admin - Đám cưới Minh Đức & Ngọc Ánh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #fff0f0 0%, #ffe6e6 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(139, 31, 43, 0.1);
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: linear-gradient(45deg, rgba(139, 31, 43, 0.1), rgba(255, 107, 122, 0.1));
+            border-radius: 35px;
+            z-index: -1;
+        }
+
+        .login-header {
+            margin-bottom: 40px;
+        }
+
+        .login-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3em;
+            color: #8B1F2B;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .login-subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #f0f0f0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #8B1F2B;
+            background: white;
+            box-shadow: 0 0 0 0.2rem rgba(139, 31, 43, 0.25);
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8B1F2B;
+            font-size: 18px;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(45deg, #8B1F2B, #a32530);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 31, 43, 0.3);
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 31, 43, 0.4);
+            background: linear-gradient(45deg, #a32530, #8B1F2B);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: none;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background: linear-gradient(45deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+        }
+
+        .heart-decoration {
+            position: absolute;
+            color: rgba(139, 31, 43, 0.1);
+            font-size: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .heart-1 {
+            top: 20px;
+            left: 30px;
+            animation-delay: 0s;
+        }
+
+        .heart-2 {
+            top: 40px;
+            right: 30px;
+            animation-delay: 1s;
+        }
+
+        .heart-3 {
+            bottom: 30px;
+            left: 40px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .back-link {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: #8B1F2B;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #a32530;
+            text-decoration: none;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+
+            .login-title {
+                font-size: 2.2em;
+            }
+
+            .back-link {
+                position: static;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Về trang chủ
+    </a>
+
+    <div class="login-container">
+        <div class="heart-decoration heart-1">
+            <i class="fas fa-heart"></i>
+        </div>
+        <div class="heart-decoration heart-2">
+            <i class="fas fa-heart"></i>
+        </div>
+        <div class="heart-decoration heart-3">
+            <i class="fas fa-heart"></i>
+        </div>
+
+        <div class="login-header">
+            <h1 class="login-title">Admin Panel</h1>
+            <p class="login-subtitle">Đăng nhập để quản lý thư mời</p>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                <%= error %>
+            </div>
+        <% } %>
+
+        <form action="/admin/login" method="POST">
+            <div class="form-group">
+                <i class="fas fa-lock form-icon"></i>
+                <input type="password" 
+                       class="form-control" 
+                       name="password" 
+                       placeholder="Nhập mật khẩu"
+                       required>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i>
+                Đăng nhập
+            </button>
+        </form>
+    </div>
+</body>
+</html> 

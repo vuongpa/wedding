@@ -4,10 +4,12 @@ const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 const methodOverride = require('method-override');
 const moment = require('moment');
+const session = require('express-session');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'invitations.json');
+const ADMIN_PASSWORD = 'anhxinh@1998';
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -15,11 +17,31 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layout');
 
+// Session middleware
+app.use(session({
+    secret: 'wedding-secret-key-2024',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false, // Set to true if using HTTPS
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
+
+// Admin authentication middleware
+function requireAuth(req, res, next) {
+    if (req.session && req.session.authenticated) {
+        return next();
+    } else {
+        return res.redirect('/admin/login');
+    }
+}
 
 // Local variables middleware
 app.use((req, res, next) => {
@@ -109,8 +131,42 @@ app.get('/home/:id', async (req, res) => {
     }
 });
 
+// Admin login page route
+app.get('/admin/login', (req, res) => {
+    if (req.session && req.session.authenticated) {
+        return res.redirect('/admin');
+    }
+    res.render('admin/login', { 
+        title: 'Đăng nhập Admin - Đám cưới Minh Đức & Ngọc Ánh',
+        error: req.query.error,
+        layout: false
+    });
+});
+
+// Admin login form handler
+app.post('/admin/login', (req, res) => {
+    const { password } = req.body;
+    
+    if (password === ADMIN_PASSWORD) {
+        req.session.authenticated = true;
+        res.redirect('/admin');
+    } else {
+        res.redirect('/admin/login?error=Mật khẩu không đúng');
+    }
+});
+
+// Admin logout route
+app.get('/admin/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+        }
+        res.redirect('/admin/login');
+    });
+});
+
 // Admin page route
-app.get('/admin', async (req, res) => {
+app.get('/admin', requireAuth, async (req, res) => {
     try {
         const data = await fs.readFile(DATA_FILE, 'utf8');
         const invitations = JSON.parse(data);
@@ -126,7 +182,7 @@ app.get('/admin', async (req, res) => {
 });
 
 // Create invitation route
-app.post('/admin/invitations', async (req, res) => {
+app.post('/admin/invitations', requireAuth, async (req, res) => {
     try {
         const data = await fs.readFile(DATA_FILE, 'utf8');
         const invitations = JSON.parse(data);
@@ -148,7 +204,7 @@ app.post('/admin/invitations', async (req, res) => {
 });
 
 // Update invitation route
-app.put('/admin/invitations/:id', async (req, res) => {
+app.put('/admin/invitations/:id', requireAuth, async (req, res) => {
     try {
         const data = await fs.readFile(DATA_FILE, 'utf8');
         const invitations = JSON.parse(data);
@@ -176,7 +232,7 @@ app.put('/admin/invitations/:id', async (req, res) => {
 });
 
 // Delete invitation route
-app.delete('/admin/invitations/:id', async (req, res) => {
+app.delete('/admin/invitations/:id', requireAuth, async (req, res) => {
     try {
         const data = await fs.readFile(DATA_FILE, 'utf8');
         const invitations = JSON.parse(data);

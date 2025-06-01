@@ -19,6 +19,7 @@
         border-radius: 20px;
         color: white;
         box-shadow: 0 10px 30px rgba(139, 31, 43, 0.3);
+        position: relative;
     }
 
     .admin-header h1 {
@@ -32,6 +33,28 @@
         font-size: 1.2em;
         opacity: 0.9;
         margin: 0;
+    }
+
+    .logout-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        font-size: 0.9em;
+    }
+
+    .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
     }
 
     .admin-card {
@@ -250,6 +273,15 @@
             <%= messages.error %>
         </div>
     <% } %>
+
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <a href="/admin/logout" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </a>
+        <h1>Quản lý Thư mời</h1>
+        <p>Đám cưới Minh Đức & Ngọc Ánh</p>
+    </div>
 
     <!-- Statistics -->
     <div class="row stats-row">
