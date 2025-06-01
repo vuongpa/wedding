@@ -736,16 +736,44 @@
                     <div class="top-heart"></div>
                     <div class="side-heart"></div>
                     <h1 class="title">Kính gửi</h1>
-                    <h1 class="title">Em Ánh và MDL của iem</h1>
+                    <h1 class="title" id="invitationTitle">Đang tải...</h1>
                     <p class="instruction">(Nhấn vào đây để mở thiệp)</p>
                 </div>
             </a>
             <img src="images/couple.png" alt="Couple" class="couple-image">
-            <div class="signature">From: Ánh xinh with love.</div>
+            <div class="signature" id="invitationFrom">From: Đang tải...</div>
         </div>
     </div>
 
     <script>
+        // Lấy ID từ URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const invitationId = urlParams.get('id');
+
+        // Hàm lấy thông tin thư mời
+        async function getInvitationData() {
+            try {
+                const response = await fetch(`/api/invitations/${invitationId}`);
+                if (!response.ok) {
+                    throw new Error('Không tìm thấy thư mời');
+                }
+                const invitation = await response.json();
+                
+                // Cập nhật nội dung
+                document.getElementById('invitationTitle').textContent = invitation.title;
+                document.getElementById('invitationFrom').textContent = `From: ${invitation.from}`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('invitationTitle').textContent = 'Thư mời không tồn tại';
+                document.getElementById('invitationFrom').textContent = 'From: Unknown';
+            }
+        }
+
+        // Load dữ liệu khi trang được tải
+        if (invitationId) {
+            getInvitationData();
+        }
+
         function createFallingHeart() {
             const heart = document.createElement('div');
             heart.className = 'falling-heart';

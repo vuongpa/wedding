@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Thư mời</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h1 class="h5 mb-0">Quản lý Thư mời</h1>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                                <i class="bi bi-plus-circle me-2"></i>Tạo thư mời mới
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="invitationsTable" class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tiêu đề</th>
+                                        <th>Người gửi</th>
+                                        <th>Ngày tạo</th>
+                                        <th>URL</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invitationsList">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tạo thư mời mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="invitationForm">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Tiêu đề thư mời:</label>
+                            <input type="text" class="form-control" id="title" name="title" required 
+                                placeholder="VD: Em Ánh và MDL của iem">
+                        </div>
+                        <div class="mb-3">
+                            <label for="from" class="form-label">Người gửi:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="from" name="from" 
+                                    value="Ánh xinh with love." required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="resetSender()">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Mặc định: "Ánh xinh with love."</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="submitForm()">Tạo thư mời</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xem trước thư mời</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="previewFrame" style="width: 100%; height: 500px; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa thư mời này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        let dataTable;
+        let deleteInvitationId = null;
+        const DEFAULT_SENDER = "Ánh xinh with love.";
+        const createModal = new bootstrap.Modal(document.getElementById('createModal'));
+        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+        // Reset người gửi về mặc định
+        function resetSender() {
+            document.getElementById('from').value = DEFAULT_SENDER;
+        }
+
+        // Submit form
+        function submitForm() {
+            const form = document.getElementById('invitationForm');
+            if (form.checkValidity()) {
+                const title = document.getElementById('title').value;
+                const from = document.getElementById('from').value;
+
+                const invitation = {
+                    id: generateId(),
+                    title,
+                    from,
+                    created: new Date().toISOString()
+                };
+
+                saveInvitation(invitation).then(() => {
+                    createModal.hide();
+                    showAlert('Tạo thư mời thành công!', 'success');
+                    getInvitations();
+                    form.reset();
+                    resetSender();
+                });
+            } else {
+                form.reportValidity();
+            }
+        }
+
+        // Hàm tạo ID ngẫu nhiên
+        function generateId() {
+            return Math.random().toString(36).substr(2, 9);
+        }
+
+        // Hàm lưu dữ liệu vào JSON
+        async function saveInvitation(invitation) {
+            try {
+                const response = await fetch('/api/invitations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(invitation)
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Có lỗi xảy ra khi lưu thư mời!', 'danger');
+            }
+        }
+
+        // Hàm xóa thư mời
+        async function deleteInvitation(id) {
+            try {
+                const response = await fetch(`/api/invitations/${id}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    showAlert('Xóa thư mời thành công!', 'success');
+                    await getInvitations();
+                } else {
+                    throw new Error('Không thể xóa thư mời');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Có lỗi xảy ra khi xóa thư mời!', 'danger');
+            }
+        }
+
+        // Hàm lấy danh sách thư mời
+        async function getInvitations() {
+            try {
+                const response = await fetch('/api/invitations');
+                const invitations = await response.json();
+                displayInvitations(invitations);
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Có lỗi xảy ra khi lấy danh sách thư mời!', 'danger');
+            }
+        }
+
+        // Hàm hiển thị thông báo
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.d-flex'));
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Hàm hiển thị danh sách thư mời
+        function displayInvitations(invitations) {
+            if (dataTable) {
+                dataTable.destroy();
+            }
+
+            const listElement = document.getElementById('invitationsList');
+            if (invitations.length === 0) {
+                listElement.innerHTML = '<tr><td colspan="5" class="text-center">Chưa có thư mời nào được tạo</td></tr>';
+                return;
+            }
+            
+            listElement.innerHTML = invitations.map(inv => `
+                <tr>
+                    <td>${inv.title}</td>
+                    <td>${inv.from}</td>
+                    <td>${new Date(inv.created).toLocaleDateString('vi-VN')}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a href="/invitation.html?id=${inv.id}" class="text-decoration-none" target="_blank">
+                                ${window.location.origin}/invitation.html?id=${inv.id}
+                            </a>
+                            <button class="btn btn-outline-primary btn-sm ms-2" onclick="copyToClipboard('${window.location.origin}/invitation.html?id=${inv.id}')">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-primary" onclick="previewInvitation('${inv.id}')">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="showDeleteConfirmation('${inv.id}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Khởi tạo DataTable
+            dataTable = new DataTable('#invitationsTable', {
+                language: {
+                    search: "Tìm kiếm:",
+                    lengthMenu: "Hiển thị _MENU_ mục",
+                    info: "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Hiển thị 0 đến 0 của 0 mục",
+                    infoFiltered: "(lọc từ _MAX_ mục)",
+                    zeroRecords: "Không tìm thấy kết quả phù hợp",
+                    paginate: {
+                        first: "Đầu",
+                        previous: "Trước",
+                        next: "Tiếp",
+                        last: "Cuối"
+                    }
+                }
+            });
+        }
+
+        // Hàm copy URL vào clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('Đã sao chép URL vào clipboard!', 'success');
+            }).catch(err => {
+                console.error('Error copying text: ', err);
+                showAlert('Không thể sao chép URL!', 'danger');
+            });
+        }
+
+        // Hàm xem trước thư mời
+        function previewInvitation(id) {
+            const previewFrame = document.getElementById('previewFrame');
+            previewFrame.src = `/invitation.html?id=${id}`;
+            previewModal.show();
+        }
+
+        // Hàm hiển thị xác nhận xóa
+        function showDeleteConfirmation(id) {
+            deleteInvitationId = id;
+            deleteModal.show();
+        }
+
+        // Xử lý xác nhận xóa
+        document.getElementById('confirmDelete').addEventListener('click', async () => {
+            if (deleteInvitationId) {
+                await deleteInvitation(deleteInvitationId);
+                deleteModal.hide();
+                deleteInvitationId = null;
+            }
+        });
+
+        // Load danh sách thư mời khi trang được tải
+        getInvitations();
+    </script>
+</body>
+</html> 
