@@ -56,7 +56,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: #cc0000;
+            background: linear-gradient(135deg, #991114, #B31518, #991114);
             border-radius: 30px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
@@ -77,7 +77,7 @@
             width: 100%;
             height: 50%;
             top: 14px;
-            background: #e60000;
+            background: linear-gradient(to bottom, #B31518, #991114);
             transform-origin: top;
             transform: rotateX(180deg);
             clip-path: polygon(0 0, 50% 100%, 100% 0);
@@ -89,7 +89,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: #e60000;
+            background: linear-gradient(45deg, #800D10, #B31518);
             transform: translateZ(-1px);
             border-radius: 30px;
         }
@@ -256,7 +256,7 @@
             width: 50%;
             height: 101%;
             top: -0.5%;
-            background: #ff1a1a;
+            background: linear-gradient(to bottom, #800D10, #991114);
             z-index: 11;
         }
 
@@ -265,6 +265,7 @@
             transform-origin: left;
             clip-path: polygon(0 0, 100% 50%, 0 100%);
             border-radius: 30px 0 0 30px;
+            background: linear-gradient(to right, #800D10, #991114);
         }
 
         .envelope-right-edge {
@@ -272,6 +273,7 @@
             transform-origin: right;
             clip-path: polygon(100% 0, 0 50%, 100% 100%);
             border-radius: 0 30px 30px 0;
+            background: linear-gradient(to left, #800D10, #991114);
         }
 
         .envelope-bottom {
@@ -279,7 +281,7 @@
             width: 100%;
             height: 50%;
             bottom: 0;
-            background: #e60000;
+            background: linear-gradient(to top, #800D10, #B31518);
             clip-path: polygon(0 100%, 50% 0, 100% 100%);
             z-index: 11;
             border-radius: 0 0 30px 30px;
@@ -472,7 +474,7 @@
         }
 
         .heart {
-            background: linear-gradient(45deg, #ff0000, #ff3333);
+            background: linear-gradient(45deg, #991114, #B31518, #991114);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-size: 1.2em;
@@ -485,7 +487,7 @@
             transform: translateX(-50%);
             width: 30px;
             height: 30px;
-            background: #ff0000;
+            background: linear-gradient(135deg, #991114, #B31518);
             transform-origin: center;
             clip-path: path('M15,0 C6.7,0 0,6.7 0,15 C0,23.3 6.7,30 15,30 C23.3,30 30,23.3 30,15 C30,6.7 23.3,0 15,0 Z');
         }
@@ -496,7 +498,7 @@
             right: -10px;
             width: 20px;
             height: 20px;
-            background: #ff0000;
+            background: linear-gradient(135deg, #991114, #B31518);
             transform: translateY(-50%);
             clip-path: path('M10,0 C4.5,0 0,4.5 0,10 C0,15.5 4.5,20 10,20 C15.5,20 20,15.5 20,10 C20,4.5 15.5,0 10,0 Z');
         }
@@ -517,7 +519,7 @@
             position: absolute;
             width: 15px;
             height: 15px;
-            background: #ff0000;
+            background: linear-gradient(135deg, #991114, #B31518);
             transform: rotate(45deg);
             animation: falling linear infinite;
         }
@@ -737,6 +739,29 @@
             50% {
                 opacity: 1;
             }
+        }
+
+        /* Thêm hiệu ứng lấp lánh cho gradient */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .envelope-front, .envelope-back, .envelope-flap, .envelope-bottom {
+            background-size: 200% 200%;
+            animation: gradientShift 10s ease infinite;
+        }
+
+        .top-heart, .side-heart, .falling-heart {
+            background-size: 150% 150%;
+            animation: gradientShift 5s ease infinite;
         }
     </style>
 </head>
