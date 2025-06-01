@@ -4,11 +4,35 @@ const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 const methodOverride = require('method-override');
 const moment = require('moment');
+const Redis = require('ioredis');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'invitations.json');
-const ADMIN_PASSWORD = 'anhxinh@1998';
+const REDIS_KEY = 'wedding-invitations';
+
+// Redis configuration
+let redisClient = null;
+const REDIS_URL = process.env.REDIS_URL || process.env.REDIS_CONNECTION_STRING || "redis://default:PaayJBWLRrOEyDnD3TAMlsdkEiI5bA1k@redis-18294.c292.ap-southeast-1-1.ec2.redns.redis-cloud.com:18294";
+
+// Initialize Redis client if available
+if (REDIS_URL) {
+    try {
+        redisClient = new Redis(REDIS_URL);
+        console.log(`[REDIS] Connecting to Redis server...`);
+        
+        redisClient.on('connect', () => {
+            console.log('[REDIS] Connected to Redis server');
+        });
+        
+        redisClient.on('error', (err) => {
+            console.error('[REDIS] Redis connection error:', err);
+        });
+    } catch (error) {
+        console.error('[REDIS] Failed to initialize Redis:', error);
+        redisClient = null;
+    }
+}
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -70,11 +94,59 @@ async function initDataFile() {
     }
 }
 
+// Data operations functions
+async function readInvitations() {
+    // Priority: Custom Redis > Local File
+    if (redisClient) {
+        try {
+            console.log('[REDIS] Reading invitations from Redis');
+            const data = await redisClient.get(REDIS_KEY);
+            return data ? JSON.parse(data) : [];
+        } catch (error) {
+            console.error('[REDIS] Error reading from Redis:', error);
+            // Fallback to file if Redis fails
+        }
+    }
+    
+    // Fallback to local file
+    try {
+        console.log('[FILE] Reading invitations from file');
+        const data = await fs.readFile(DATA_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('[FILE] Error reading from file:', error);
+        return [];
+    }
+}
+
+async function writeInvitations(invitations) {
+    // Priority: Custom Redis > Local File
+    if (redisClient) {
+        try {
+            console.log(`[REDIS] Writing ${invitations.length} invitations to Redis`);
+            await redisClient.set(REDIS_KEY, JSON.stringify(invitations));
+            return true;
+        } catch (error) {
+            console.error('[REDIS] Error writing to Redis:', error);
+            throw error;
+        }
+    }
+    
+    // Fallback to local file
+    try {
+        console.log(`[FILE] Writing ${invitations.length} invitations to file`);
+        await fs.writeFile(DATA_FILE, JSON.stringify(invitations, null, 2));
+        return true;
+    } catch (error) {
+        console.error('[FILE] Error writing to file:', error);
+        throw error;
+    }
+}
+
 // Main wedding page route
 app.get('/', async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        const invitations = await readInvitations();
         // Get 4 most recent invitations
         const recentInvitations = invitations
             .sort((a, b) => new Date(b.created) - new Date(a.created))
@@ -88,7 +160,7 @@ app.get('/', async (req, res) => {
         });
     } catch (error) {
         console.error('Error reading invitations:', error);
-        // If no file exists (production), show empty state
+        // If error, show empty state
         res.render('home', { 
             title: 'Đám cưới Minh Đức & Ngọc Ánh',
             recentInvitations: [],
@@ -101,8 +173,7 @@ app.get('/', async (req, res) => {
 // Home page with invitation ID route
 app.get('/home/:id', async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        const invitations = await readInvitations();
         const invitation = invitations.find(inv => inv.id === req.params.id);
         
         if (invitation) {
@@ -122,7 +193,7 @@ app.get('/home/:id', async (req, res) => {
         }
     } catch (error) {
         console.error('Error reading invitation:', error);
-        // If no file exists (production), show 404
+        // If error, show 404
         res.status(404).render('error', { 
             title: 'Không tìm thấy - Đám cưới Minh Đức & Ngọc Ánh',
             message: 'Không tìm thấy thư mời',
@@ -135,8 +206,7 @@ app.get('/home/:id', async (req, res) => {
 // Admin page route
 app.get('/admin', async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        const invitations = await readInvitations();
         res.render('admin/index', { 
             title: 'Quản lý Thư mời - Đám cưới Minh Đức & Ngọc Ánh',
             invitations,
@@ -144,13 +214,13 @@ app.get('/admin', async (req, res) => {
         });
     } catch (error) {
         console.error('Error reading invitations:', error);
-        // If no file exists (production), show empty list with warning
+        // If error, show empty list
         res.render('admin/index', { 
             title: 'Quản lý Thư mời - Đám cưới Minh Đức & Ngọc Ánh',
             invitations: [],
             layout: 'layout',
             messages: {
-                error: 'Đang chạy trên môi trường production - dữ liệu sẽ không được lưu vĩnh viễn'
+                error: 'Có lỗi xảy ra khi tải dữ liệu'
             }
         });
     }
@@ -159,13 +229,7 @@ app.get('/admin', async (req, res) => {
 // Create invitation route
 app.post('/admin/invitations', async (req, res) => {
     try {
-        let invitations = [];
-        try {
-            const data = await fs.readFile(DATA_FILE, 'utf8');
-            invitations = JSON.parse(data);
-        } catch (readError) {
-            console.log('No existing data file, starting with empty array');
-        }
+        const invitations = await readInvitations();
         
         const newInvitation = {
             id: Math.random().toString(36).substr(2, 9),
@@ -175,26 +239,19 @@ app.post('/admin/invitations', async (req, res) => {
         };
         
         invitations.push(newInvitation);
-        await fs.writeFile(DATA_FILE, JSON.stringify(invitations, null, 2));
+        await writeInvitations(invitations);
         
         res.redirect('/admin?success=Tạo thư mời thành công');
     } catch (error) {
         console.error('Error creating invitation:', error);
-        res.redirect('/admin?error=Lỗi: Không thể ghi file trên môi trường production');
+        res.redirect('/admin?error=Có lỗi xảy ra khi tạo thư mời');
     }
 });
 
 // Update invitation route
 app.put('/admin/invitations/:id', async (req, res) => {
     try {
-        let invitations = [];
-        try {
-            const data = await fs.readFile(DATA_FILE, 'utf8');
-            invitations = JSON.parse(data);
-        } catch (readError) {
-            return res.redirect('/admin?error=Không tìm thấy dữ liệu thư mời');
-        }
-        
+        const invitations = await readInvitations();
         const index = invitations.findIndex(inv => inv.id === req.params.id);
         
         if (index === -1) {
@@ -209,29 +266,19 @@ app.put('/admin/invitations/:id', async (req, res) => {
             updated: new Date().toISOString()
         };
         
-        await fs.writeFile(DATA_FILE, JSON.stringify(invitations, null, 2));
+        await writeInvitations(invitations);
         
         res.redirect('/admin?success=Cập nhật thư mời thành công');
     } catch (error) {
         console.error('Error updating invitation:', error);
-        res.redirect('/admin?error=Lỗi: Không thể ghi file trên môi trường production');
+        res.redirect('/admin?error=Có lỗi xảy ra khi cập nhật thư mời');
     }
 });
 
 // Delete invitation route
 app.delete('/admin/invitations/:id', async (req, res) => {
     try {
-        let invitations = [];
-        try {
-            const data = await fs.readFile(DATA_FILE, 'utf8');
-            invitations = JSON.parse(data);
-        } catch (readError) {
-            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
-                return res.status(404).json({ error: 'Không tìm thấy dữ liệu thư mời' });
-            }
-            return res.redirect('/admin?error=Không tìm thấy dữ liệu thư mời');
-        }
-        
+        const invitations = await readInvitations();
         const index = invitations.findIndex(inv => inv.id === req.params.id);
         
         if (index === -1) {
@@ -243,7 +290,7 @@ app.delete('/admin/invitations/:id', async (req, res) => {
         }
         
         invitations.splice(index, 1);
-        await fs.writeFile(DATA_FILE, JSON.stringify(invitations, null, 2));
+        await writeInvitations(invitations);
         
         // Check if request expects JSON response
         if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
@@ -257,18 +304,17 @@ app.delete('/admin/invitations/:id', async (req, res) => {
         // Check if request expects JSON response
         if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
             return res.status(500).json({ 
-                error: 'Lỗi: Không thể ghi file trên môi trường production. Dữ liệu sẽ mất khi restart server.'
+                error: 'Có lỗi xảy ra khi xóa thư mời'
             });
         }
-        res.redirect('/admin?error=Lỗi: Không thể ghi file trên môi trường production');
+        res.redirect('/admin?error=Có lỗi xảy ra khi xóa thư mời');
     }
 });
 
 // Individual invitation page route  
 app.get('/invitation/:id', async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        const invitations = await readInvitations();
         const invitation = invitations.find(inv => inv.id === req.params.id);
         
         if (invitation) {
@@ -298,8 +344,7 @@ app.get('/invitation/:id', async (req, res) => {
 // API endpoint for invitation data (if needed for AJAX)
 app.get('/api/invitations/:id', async (req, res) => {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        const invitations = JSON.parse(data);
+        const invitations = await readInvitations();
         const invitation = invitations.find(inv => inv.id === req.params.id);
         
         if (!invitation) {
