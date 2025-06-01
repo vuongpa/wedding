@@ -24,8 +24,10 @@ app.use(session({
     saveUninitialized: false,
     cookie: { 
         secure: false,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days instead of 1 day
+        httpOnly: true // Add security
+    },
+    rolling: true // Reset maxAge on each request
 }));
 
 // Middleware
@@ -239,15 +241,28 @@ app.delete('/admin/invitations/:id', requireAuth, async (req, res) => {
         const index = invitations.findIndex(inv => inv.id === req.params.id);
         
         if (index === -1) {
+            // Check if request expects JSON response
+            if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+                return res.status(404).json({ error: 'Không tìm thấy thư mời' });
+            }
             return res.redirect('/admin?error=Không tìm thấy thư mời');
         }
         
         invitations.splice(index, 1);
         await fs.writeFile(DATA_FILE, JSON.stringify(invitations, null, 2));
         
+        // Check if request expects JSON response
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+            return res.json({ success: 'Xóa thư mời thành công' });
+        }
+        
         res.redirect('/admin?success=Xóa thư mời thành công');
     } catch (error) {
         console.error('Error deleting invitation:', error);
+        // Check if request expects JSON response
+        if (req.xhr || req.headers.accept?.indexOf('json') > -1) {
+            return res.status(500).json({ error: 'Có lỗi xảy ra khi xóa thư mời' });
+        }
         res.redirect('/admin?error=Có lỗi xảy ra khi xóa thư mời');
     }
 });

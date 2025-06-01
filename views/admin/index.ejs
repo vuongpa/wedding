@@ -370,13 +370,10 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <form action="/admin/invitations/<%= invitation.id %>?_method=DELETE" 
-                                          method="POST" style="display: inline;"
-                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa thư mời này?')">
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-danger btn-sm" 
+                                            onclick="deleteInvitation('<%= invitation.id %>', '<%= invitation.title %>')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         <% }) %>
@@ -400,6 +397,99 @@ function editInvitation(id, title, from) {
     document.getElementById('edit-invitation-id').value = id;
     document.getElementById('edit-title').value = decodeHtmlEntities(title);
     document.getElementById('edit-from').value = decodeHtmlEntities(from);
+}
+
+// Function to delete invitation using AJAX
+function deleteInvitation(invitationId, invitationTitle) {
+    if (!confirm(`Bạn có chắc chắn muốn xóa thư mời "${invitationTitle}"?`)) {
+        return;
+    }
+    
+    // Show loading state
+    const deleteBtn = event.target.closest('button');
+    const originalContent = deleteBtn.innerHTML;
+    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    deleteBtn.disabled = true;
+    
+    // Make AJAX request
+    fetch(`/admin/invitations/${invitationId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showMessage(data.success, 'success');
+            // Remove row from table
+            deleteBtn.closest('tr').remove();
+            // Update statistics
+            updateStatistics();
+        } else {
+            showMessage(data.error || 'Có lỗi xảy ra', 'danger');
+            // Restore button state
+            deleteBtn.innerHTML = originalContent;
+            deleteBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('Có lỗi xảy ra khi xóa thư mời', 'danger');
+        // Restore button state
+        deleteBtn.innerHTML = originalContent;
+        deleteBtn.disabled = false;
+    });
+}
+
+// Function to show messages
+function showMessage(message, type) {
+    // Remove existing alerts
+    const existingAlerts = document.querySelectorAll('.alert');
+    existingAlerts.forEach(alert => alert.remove());
+    
+    // Create new alert
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+        ${message}
+    `;
+    
+    // Insert at the top of admin container
+    const adminContainer = document.querySelector('.admin-container');
+    adminContainer.insertBefore(alertDiv, adminContainer.firstChild);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+// Function to update statistics after deletion
+function updateStatistics() {
+    const tableRows = document.querySelectorAll('tbody tr');
+    const totalCount = tableRows.length;
+    
+    // Update total count
+    const totalElement = document.querySelector('.stat-number');
+    if (totalElement) {
+        totalElement.textContent = totalCount;
+    }
+    
+    // If no invitations left, show empty message
+    if (totalCount === 0) {
+        const tbody = document.querySelector('tbody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center py-4">
+                    <em>Chưa có thư mời nào được tạo</em>
+                </td>
+            </tr>
+        `;
+    }
 }
 
 // Function to decode HTML entities
