@@ -1,0 +1,89 @@
+<!-- Edit Invitation Modal -->
+<div class="modal fade" id="editInvitationModal" tabindex="-1" aria-labelledby="editInvitationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(45deg, #8B1F2B, #a32530); color: white;">
+                <h5 class="modal-title" id="editInvitationModalLabel">
+                    <i class="fas fa-edit me-2"></i>Chỉnh sửa Thư Mời
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 0.8;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="background: #f8f9fa;">
+                <form id="editInvitationForm" method="POST">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" id="edit-invitation-id" name="id">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="edit-title" class="form-label fw-bold">
+                                    <i class="fas fa-user me-1"></i>Tên người nhận:
+                                </label>
+                                <input type="text" class="form-control" id="edit-title" name="title" required
+                                       placeholder="VD: Ông/Bà Nguyễn Văn A"
+                                       style="border-radius: 10px; border: 2px solid #e0e0e0;">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="edit-from" class="form-label fw-bold">
+                                    <i class="fas fa-heart me-1"></i>Người gửi:
+                                </label>
+                                <input type="text" class="form-control" id="edit-from" name="from" required
+                                       style="border-radius: 10px; border: 2px solid #e0e0e0;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-info" style="border-radius: 10px; border: none; background: linear-gradient(45deg, #d1ecf1, #bee5eb);">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Lưu ý:</strong> Việc chỉnh sửa sẽ không thay đổi ngày tạo và ID của thư mời.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="background: white; border-radius: 0 0 10px 10px;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" 
+                        style="border-radius: 20px; padding: 8px 20px;">
+                    <i class="fas fa-times me-1"></i>Hủy
+                </button>
+                <button type="submit" form="editInvitationForm" class="btn btn-wedding">
+                    <i class="fas fa-save me-1"></i>Lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    border-radius: 15px 15px 0 0;
+    border-bottom: none;
+    padding: 20px 30px;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #e9ecef;
+}
+
+.form-control:focus {
+    border-color: #8B1F2B !important;
+    box-shadow: 0 0 0 0.2rem rgba(139, 31, 43, 0.25) !important;
+}
+</style> 

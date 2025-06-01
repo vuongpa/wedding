@@ -4,27 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Thư mời</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- DataTables CSS -->
-    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <!-- Bootstrap 3 CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- DataTables CSS for Bootstrap 3 -->
+    <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h1 class="h5 mb-0">Quản lý Thư mời</h1>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-                                <i class="bi bi-plus-circle me-2"></i>Tạo thư mời mới
-                            </button>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default" style="margin-top: 20px;">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>Quản lý Thư mời</h3>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#createModal">
+                                    <i class="fa fa-plus-circle"></i> Tạo thư mời mới
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="margin-top: 20px;">
                             <table id="invitationsTable" class="table table-striped table-hover">
                                 <thead>
                                     <tr>
@@ -46,35 +50,39 @@
     </div>
 
     <!-- Create Modal -->
-    <div class="modal fade" id="createModal" tabindex="-1">
-        <div class="modal-dialog">
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tạo thư mời mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Tạo thư mời mới</h4>
                 </div>
                 <div class="modal-body">
                     <form id="invitationForm">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Tiêu đề thư mời:</label>
+                        <div class="form-group">
+                            <label for="title" class="control-label">Tiêu đề thư mời:</label>
                             <input type="text" class="form-control" id="title" name="title" required 
                                 placeholder="VD: Em Ánh và MDL của iem">
                         </div>
-                        <div class="mb-3">
-                            <label for="from" class="form-label">Người gửi:</label>
+                        <div class="form-group">
+                            <label for="from" class="control-label">Người gửi:</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="from" name="from" 
                                     value="Ánh xinh with love." required>
-                                <button class="btn btn-outline-secondary" type="button" onclick="resetSender()">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                </button>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" onclick="resetSender()">
+                                        <i class="fa fa-refresh"></i>
+                                    </button>
+                                </span>
                             </div>
-                            <div class="form-text">Mặc định: "Ánh xinh with love."</div>
+                            <p class="help-block">Mặc định: "Ánh xinh with love."</p>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
                     <button type="button" class="btn btn-primary" onclick="submitForm()">Tạo thư mời</button>
                 </div>
             </div>
@@ -82,54 +90,55 @@
     </div>
 
     <!-- Preview Modal -->
-    <div class="modal fade" id="previewModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="previewModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Xem trước thư mời</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Xem trước thư mời</h4>
                 </div>
                 <div class="modal-body">
-                    <iframe id="previewFrame" style="width: 100%; height: 500px; border: none;"></iframe>
+                    <iframe id="previewFrame" class="col-md-12" style="height: 500px; border: none;"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Xác nhận xóa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Xác nhận xóa</h4>
                 </div>
                 <div class="modal-body">
                     Bạn có chắc chắn muốn xóa thư mời này không?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
                     <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap 3 JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap.min.js"></script>
     
     <script>
         let dataTable;
         let deleteInvitationId = null;
         const DEFAULT_SENDER = "Ánh xinh with love.";
-        const createModal = new bootstrap.Modal(document.getElementById('createModal'));
-        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 
         // Reset người gửi về mặc định
         function resetSender() {
@@ -151,7 +160,7 @@
                 };
 
                 saveInvitation(invitation).then(() => {
-                    createModal.hide();
+                    $('#createModal').modal('hide');
                     showAlert('Tạo thư mời thành công!', 'success');
                     getInvitations();
                     form.reset();
@@ -217,12 +226,14 @@
         // Hàm hiển thị thông báo
         function showAlert(message, type) {
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.className = `alert alert-${type} alert-dismissible`;
             alertDiv.innerHTML = `
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
-            document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.d-flex'));
+            document.querySelector('.panel-body').insertBefore(alertDiv, document.querySelector('.row'));
             
             setTimeout(() => {
                 alertDiv.remove();
@@ -247,22 +258,26 @@
                     <td>${inv.from}</td>
                     <td>${new Date(inv.created).toLocaleDateString('vi-VN')}</td>
                     <td>
-                        <div class="d-flex align-items-center">
-                            <a href="/invitation.html?id=${inv.id}" class="text-decoration-none" target="_blank">
-                                ${window.location.origin}/invitation.html?id=${inv.id}
-                            </a>
-                            <button class="btn btn-outline-primary btn-sm ms-2" onclick="copyToClipboard('${window.location.origin}/invitation.html?id=${inv.id}')">
-                                <i class="bi bi-clipboard"></i>
-                            </button>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <a href="/invitation.html?id=${inv.id}" target="_blank">
+                                    ${window.location.origin}/invitation.html?id=${inv.id}
+                                </a>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-xs btn-default" onclick="copyToClipboard('${window.location.origin}/invitation.html?id=${inv.id}')">
+                                    <i class="fa fa-clipboard"></i>
+                                </button>
+                            </div>
                         </div>
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-primary" onclick="previewInvitation('${inv.id}')">
-                                <i class="bi bi-eye"></i>
+                            <button class="btn btn-xs btn-info" onclick="previewInvitation('${inv.id}')">
+                                <i class="fa fa-eye"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="showDeleteConfirmation('${inv.id}')">
-                                <i class="bi bi-trash"></i>
+                            <button class="btn btn-xs btn-danger" onclick="showDeleteConfirmation('${inv.id}')">
+                                <i class="fa fa-trash"></i>
                             </button>
                         </div>
                     </td>
@@ -270,7 +285,7 @@
             `).join('');
 
             // Khởi tạo DataTable
-            dataTable = new DataTable('#invitationsTable', {
+            dataTable = $('#invitationsTable').DataTable({
                 language: {
                     search: "Tìm kiếm:",
                     lengthMenu: "Hiển thị _MENU_ mục",
@@ -302,26 +317,28 @@
         function previewInvitation(id) {
             const previewFrame = document.getElementById('previewFrame');
             previewFrame.src = `/invitation.html?id=${id}`;
-            previewModal.show();
+            $('#previewModal').modal('show');
         }
 
         // Hàm hiển thị xác nhận xóa
         function showDeleteConfirmation(id) {
             deleteInvitationId = id;
-            deleteModal.show();
+            $('#deleteModal').modal('show');
         }
 
         // Xử lý xác nhận xóa
         document.getElementById('confirmDelete').addEventListener('click', async () => {
             if (deleteInvitationId) {
                 await deleteInvitation(deleteInvitationId);
-                deleteModal.hide();
+                $('#deleteModal').modal('hide');
                 deleteInvitationId = null;
             }
         });
 
         // Load danh sách thư mời khi trang được tải
-        getInvitations();
+        $(document).ready(function() {
+            getInvitations();
+        });
     </script>
 </body>
 </html> 

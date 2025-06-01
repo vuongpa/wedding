@@ -1,0 +1,31 @@
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div style="background: white; border-radius: 20px; padding: 50px; box-shadow: 0 10px 30px rgba(139, 31, 43, 0.1); border: 2px solid rgba(139, 31, 43, 0.1);">
+                <div style="font-size: 4em; color: #8B1F2B; margin-bottom: 20px;">
+                    <% if (error.status === 404) { %>
+                        🔍
+                    <% } else { %>
+                        ⚠️
+                    <% } %>
+                </div>
+                
+                <h1 style="font-family: 'Dancing Script', cursive; color: #8B1F2B; font-size: 3em; margin-bottom: 20px;">
+                    Oops!
+                </h1>
+                
+                <h2 style="color: #666; font-size: 1.5em; margin-bottom: 20px;">
+                    <%= error.status || 500 %>
+                </h2>
+                
+                <p style="color: #888; font-size: 1.2em; margin-bottom: 30px;">
+                    <%= message %>
+                </p>
+                
+                <a href="/" style="background: linear-gradient(45deg, #8B1F2B, #a32530); color: white; text-decoration: none; padding: 15px 30px; border-radius: 50px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: inline-block; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(139, 31, 43, 0.3);">
+                    💒 Về trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+</div> 

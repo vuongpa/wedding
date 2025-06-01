@@ -1,0 +1,35 @@
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo thư mời mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/admin/invitations" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Tiêu đề thư mời:</label>
+                        <input type="text" class="form-control" id="title" name="title" required 
+                            placeholder="VD: Em Ánh và MDL của iem">
+                    </div>
+                    <div class="mb-3">
+                        <label for="from" class="form-label">Người gửi:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="from" name="from" 
+                                value="Ánh xinh with love." required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="resetSender()">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Mặc định: "Ánh xinh with love."</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Tạo thư mời</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 

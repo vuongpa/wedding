@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+    <!-- Bowtie -->
+    <g fill="#dc3545">
+        <!-- Left triangle -->
+        <path d="M5,20 L15,10 L15,30 Z"/>
+        <!-- Center knot -->
+        <rect x="15" y="15" width="10" height="10"/>
+        <!-- Right triangle -->
+        <path d="M35,20 L25,10 L25,30 Z"/>
+    </g>
+</svg> 

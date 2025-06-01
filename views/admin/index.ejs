@@ -1,0 +1,427 @@
+<style>
+    body {
+        background: linear-gradient(135deg, #fff0f0 0%, #ffe6e6 100%);
+        min-height: 100vh;
+        font-family: 'Quicksand', sans-serif;
+    }
+
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .admin-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, #8B1F2B, #a32530);
+        border-radius: 20px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(139, 31, 43, 0.3);
+    }
+
+    .admin-header h1 {
+        font-family: 'Dancing Script', cursive;
+        font-size: 3em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .admin-header p {
+        font-size: 1.2em;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .admin-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 1px solid rgba(139, 31, 43, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .admin-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .card-title {
+        font-family: 'Dancing Script', cursive;
+        font-size: 2.2em;
+        color: #8B1F2B;
+        margin-bottom: 20px;
+        text-align: center;
+        position: relative;
+    }
+
+    .card-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(45deg, #8B1F2B, #ff6b7a);
+        border-radius: 2px;
+    }
+
+    .btn-wedding {
+        background: linear-gradient(45deg, #8B1F2B, #a32530);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(139, 31, 43, 0.3);
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .btn-wedding:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 31, 43, 0.4);
+        background: linear-gradient(45deg, #a32530, #8B1F2B);
+    }
+
+    .form-control {
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-family: 'Quicksand', sans-serif;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #8B1F2B;
+        box-shadow: 0 0 0 0.2rem rgba(139, 31, 43, 0.25);
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .table {
+        border-radius: 15px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .table thead th {
+        background: linear-gradient(45deg, #8B1F2B, #a32530);
+        color: white;
+        border: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 15px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(139, 31, 43, 0.05);
+    }
+
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 0.85em;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .btn-danger {
+        background: linear-gradient(45deg, #dc3545, #e74c3c);
+        border: none;
+        box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    .alert {
+        border-radius: 15px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border: none;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: linear-gradient(45deg, #d4edda, #c3e6cb);
+        color: #155724;
+    }
+
+    .alert-danger {
+        background: linear-gradient(45deg, #f8d7da, #f5c6cb);
+        color: #721c24;
+    }
+
+    .invitation-link {
+        color: #8B1F2B;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .invitation-link:hover {
+        color: #a32530;
+        text-decoration: underline;
+    }
+
+    .stats-row {
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        border: 2px solid rgba(139, 31, 43, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(139, 31, 43, 0.3);
+    }
+
+    .stat-number {
+        font-size: 2.5em;
+        font-weight: 700;
+        color: #8B1F2B;
+        margin-bottom: 10px;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .stat-label {
+        color: #666;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+        .admin-header h1 {
+            font-size: 2em;
+        }
+        
+        .admin-card {
+            padding: 20px;
+        }
+        
+        .table-responsive {
+            font-size: 0.9em;
+        }
+    }
+</style>
+
+<div class="admin-container">
+    <!-- Alerts -->
+    <% if (messages.success) { %>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            <%= messages.success %>
+        </div>
+    <% } %>
+
+    <% if (messages.error) { %>
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <%= messages.error %>
+        </div>
+    <% } %>
+
+    <!-- Statistics -->
+    <div class="row stats-row">
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-number"><%= invitations.length %></div>
+                <div class="stat-label">Tổng thư mời</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-number"><%= invitations.filter(inv => new Date(inv.created) > new Date(Date.now() - 24*60*60*1000)).length %></div>
+                <div class="stat-label">Mới hôm nay</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="stat-number"><%= invitations.filter(inv => new Date(inv.created) > new Date(Date.now() - 7*24*60*60*1000)).length %></div>
+                <div class="stat-label">Tuần này</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Invitation Form -->
+    <div class="admin-card">
+        <h2 class="card-title">Tạo Thư Mời Mới</h2>
+        <form action="/admin/invitations" method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="title" class="form-label">Tên người nhận:</label>
+                        <input type="text" class="form-control" id="title" name="title" required
+                               placeholder="VD: Ông/Bà Nguyễn Văn A">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="from" class="form-label">Người gửi:</label>
+                        <input type="text" class="form-control" id="from" name="from" 
+                               value="Ngọc Ánh with lovee." required>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-wedding">
+                    <i class="fas fa-plus me-2"></i>Tạo Thư Mời
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Invitations List -->
+    <div class="admin-card">
+        <h2 class="card-title">Danh Sách Thư Mời</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên người nhận</th>
+                        <th>Người gửi</th>
+                        <th>Ngày tạo</th>
+                        <th>Link thư mời</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (invitations.length === 0) { %>
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <em>Chưa có thư mời nào được tạo</em>
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% invitations.forEach(invitation => { %>
+                            <tr>
+                                <td><code><%= invitation.id %></code></td>
+                                <td><strong><%= invitation.title %></strong></td>
+                                <td><%= invitation.from %></td>
+                                <td><%= moment(invitation.created).format('DD/MM/YYYY HH:mm') %></td>
+                                <td>
+                                    <a href="/invitation/<%= invitation.id %>" 
+                                       class="invitation-link" target="_blank">
+                                        <i class="fas fa-external-link-alt me-1"></i>
+                                        Xem thư mời
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="/admin/invitations/<%= invitation.id %>?_method=DELETE" 
+                                          method="POST" style="display: inline;"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa thư mời này?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Include Edit Modal -->
+<%- include('modals/edit') %>
+
+<!-- JavaScript for Edit Modal -->
+<script>
+function editInvitation(id, title, from) {
+    // Set form action URL
+    document.getElementById('editInvitationForm').action = '/admin/invitations/' + id;
+    
+    // Populate form fields - escape HTML entities  
+    document.getElementById('edit-invitation-id').value = id;
+    document.getElementById('edit-title').value = decodeHtmlEntities(title);
+    document.getElementById('edit-from').value = decodeHtmlEntities(from);
+}
+
+// Function to decode HTML entities
+function decodeHtmlEntities(text) {
+    var textarea = document.createElement("textarea");
+    textarea.innerHTML = text;
+    return textarea.value;
+}
+
+// Add form submission feedback
+document.addEventListener('DOMContentLoaded', function() {
+    const editForm = document.getElementById('editInvitationForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function() {
+            const submitBtn = document.querySelector('#editInvitationModal .btn-wedding');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...';
+            submitBtn.disabled = true;
+            
+            // Reset after 3 seconds (fallback in case redirect is slow)
+            setTimeout(function() {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+    }
+});
+
+// Add Bootstrap warning button styles
+const style = document.createElement('style');
+style.textContent = `
+    .btn-warning {
+        background: linear-gradient(45deg, #ffc107, #ffca2c);
+        border: none;
+        color: #212529;
+        box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
+        font-weight: 600;
+    }
+    
+    .btn-warning:hover {
+        background: linear-gradient(45deg, #ffca2c, #ffc107);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        color: #212529;
+    }
+    
+    .text-info {
+        color: #0dcaf0 !important;
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> 
